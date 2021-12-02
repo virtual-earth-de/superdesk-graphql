@@ -1,0 +1,10 @@
+{:paths ["src" "resources"]
+ :deps {hato/hato {:mvn/version "0.8.2"}
+        cheshire/cheshire {:mvn/version "5.10.1"}
+        com.cognitect/transit-clj {:mvn/version "1.0.324"}
+        org.slf4j/slf4j-simple       {:mvn/version "1.7.28"}
+        com.walmartlabs/lacinia {:mvn/version "1.0"}
+        com.walmartlabs/lacinia-pedestal {:mvn/version "1.0"}
+        tick/tick {:mvn/version "0.5.0-RC5"}}
+ :aliases {:test {:extra-paths ["test"]
+                  :extra-deps {}}}}

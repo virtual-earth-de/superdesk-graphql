@@ -1,0 +1,17 @@
+== Info:   Trying 127.0.0.1:8082...
+== Info: Connected to localhost (127.0.0.1) port 8082 (#0)
+== Info: Server auth using Basic with user '61a2666419b8361ae639d5f9'
+=> Send header, 259 bytes (0x103)
+0000: POST / HTTP/1.1
+0011: Host: localhost:8082
+0027: Authorization: Basic NjFhMjY2NjQxOWI4MzYxYWU2MzlkNWY5OjV0OU8yNFV
+0067: UVHRUNjU2Y1lmbU5YWEJyMDZmTkl4U2xWYlowYWpPM28=
+0096: User-Agent: curl/7.79.1
+00af: Accept: */*
+00bc: Content-Type: application/x-www-form-urlencoded
+00ed: Content-Length: 29
+0101: 
+=> Send data, 29 bytes (0x1d)
+0000: grant_type=client_credentials
+== Info: Empty reply from server
+== Info: Closing connection 0
