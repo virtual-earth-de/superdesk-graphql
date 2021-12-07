@@ -23,7 +23,10 @@
 
 (defn ^:private resolve-hello
   [context args value]
-  "eello, Clojurians!")
+  nil)
+
+(def resolver-map
+  {:query/page-by-id resolve-hello})
 
 (defn superdesk-schema
   "create GraphQL schema for superdesk data"
@@ -31,6 +34,12 @@
   (-> (io/resource schema-file-name)
       slurp
       edn/read-string
-      (util/inject-resolvers {:queries/hello resolve-hello})
+      (util/attach-resolvers resolver-map)
       schema/compile)) 
 
+(comment
+
+  (def schema (superdesk-schema "superdesk-graphql-schema.edn"))
+
+  resolver-map
+  )
