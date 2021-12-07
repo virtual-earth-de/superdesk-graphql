@@ -12,6 +12,17 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-{:queries
- {:hello
-  {:type String}}}
+{:objects
+ {:item
+  {:description "Superdesk Item"
+   :fields {:guid {:type ID}
+            :itemtype {:type String}
+            :headline {:type String}
+            :body_html {:type String}
+            }}}
+ :queries
+ {:item_by_guid
+  {:type :item
+   :description "Access Superdesk item by ID"
+   :args {:guid {:type ID}}
+   :resolve :query/page-by-id}}}
