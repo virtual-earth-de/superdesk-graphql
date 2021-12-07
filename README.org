@@ -1,0 +1,5 @@
+* superdesk-graphql
+
+Simple middleware to access superdesk api via GraphQL.
+
+Written in clojure using [[https://github.com/walmartlabs/lacinia-pedestal][lacinia-pedestal]], organized with [[https://polylith.gitbook.io/polylith/][Polylith]].
