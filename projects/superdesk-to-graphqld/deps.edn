@@ -1,5 +1,6 @@
 {:deps {org.clojure/clojure {:mvn/version "1.10.1"}
         org.clojure/tools.deps.alpha {:mvn/version "0.12.985"}
+        ch.qos.logback/logback-classic {:mvn/version "1.2.3"}
         poly/production-api-to-graphql {:local/root "components/production-api-to-graphql"}
         poly/graphql-api {:local/root "bases/graphql-api"}
         poly/production-api-auth {:local/root "components/production-api-to-graphql"}}
