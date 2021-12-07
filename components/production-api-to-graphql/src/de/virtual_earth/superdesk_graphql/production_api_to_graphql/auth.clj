@@ -18,24 +18,21 @@
 
 (defonce connections (atom {}))
 
-(def result (http/post "https://superdesk.literatur.review/api/auth_server/token"
-                       {:form-params {:grant_type "client_credentials"}
-                        :as :json
-                        :basic-auth {:user "61a2666419b8361ae639d5f9"
-                                     :pass "5t9O24UTTtT656cYfmNXXBr06fNIxSlVbZ0ajO3o"}})) 
-
 
 (defn renew_time
-  "calculate preferred expiration time in unix time, 5 min before actual expiration"
+  "calculate preferred expiration time in unix time, 5 min before actual expiration.
+  Should this be configurable?"
   [expires_in]
 
-  ;; renew 5 minutes early. Should this be configurable?
-  (let [five_min (*5 60)]
-    (+ (- renew_time five_min)
-       (.getEpochSecond (Instant/now)))))
+  (let [five_min (* 5 60)
+        renew_in (- expires_in five_min)
+        current_time (.getEpochSecond (Instant/now))]
 
-(defn expired? [{:keys [expires_at]}]
-  (< expires_at (.getEpochSecond (Instant/now))))
+    (+ current_time
+       renew_in)))
+
+(defn renew? [renew_at]
+  (< renew_at (.getEpochSecond (Instant/now))))
 
 
 ;; typischer resolver bzw jeder Zugriff auf superdesk:
@@ -52,14 +49,15 @@
                        {:form-params {:grant_type "client_credentials"}
                         :as :json :coerce :always
                         :basic-auth {:user (:user token-endpoint)
-                                     :pass (:pass token-endpoint)}})])
-  ;; should *really* add some error processing here ;)
-  (:body tokenresponse))
+                                     :pass (:pass token-endpoint)}})]
+    ;; should *really* add some error processing here ;)
+    (:body tokenresponse)))
 
 (defn get-and-store-token
 
   [api-endpoint endpointhash]
 
+  nil
   )
 
 (defn fresh?
@@ -70,9 +68,13 @@
   "return oauth token if we have it cached and it is still fresh"
   [endpointhash]
   (if-let [tokenmap (get @connections endpointhash false)]
-    (if (fresh? (:valid_to tokenmap))
-      (:token tokenmap)
-      false)))
+    (if (renew? (:expires_at tokenmap))
+      false
+      (:token tokenmap))))
+
+(defn make-hash
+  [something]
+  "blablubb FIXME")
 
 (defn oauth-token-for
   "Get oauth token from token endpoint"

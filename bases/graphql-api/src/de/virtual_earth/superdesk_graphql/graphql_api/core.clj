@@ -5,7 +5,8 @@
             [io.pedestal.http :as http]
             [com.walmartlabs.lacinia.pedestal2 :as lp]
             [com.walmartlabs.lacinia.util :as util]
-            [com.walmartlabs.lacinia.schema :as schema])
+            [com.walmartlabs.lacinia.schema :as schema]
+            [de.virtual-earth.superdesk-graphql.production-api-to-graphql.interface :as sdapi])
   (:gen-class))
 
 
@@ -13,25 +14,17 @@
   ;; this should probably be configurable ;)
   (read-config  "/usr/local/etc/superdesk-to-graphqld.edn" {:profile profile}))
 
+;; hmmm, dies sollte unten im main stehen, aber jetzt für die repl ist es besser hier draußen...
+;; da hätte ich gerne noch eine bessere Lösung...
+
 (def config (aero-config :dev))
 
-(defn ^:private resolve-hello
-  [context args value]
-  "Hello, Clojurians!")
-
-(def superdesk-schema
-  (-> (io/resource "superdesk-graphql-schema.edn")
-      slurp
-      edn/read-string
-      (util/inject-resolvers {:queries/hello resolve-hello})
-      schema/compile)) 
-
 (def service (lp/default-service
-              superdesk-schema
+              (sdapi/superdesk-schema "superdesk-graphql-schema.edn")
               {:port (get-in config [:graphql-api :port])
                :host (get-in config [:graphql-api :host])}))
 
-(defonce runnable-service (http/create-server service))
+(def runnable-service (http/create-server service))
 
 (defn -main [& argv]
   (http/start runnable-service))
@@ -41,18 +34,33 @@
 
   config
 
+  (get-in config [:graphql-api :port])
+
+  (read-string (slurp (io/resource "superdesk-graphql-schema.edn")))
+
+  (def schema (superdesk-schema "superdesk-graphql-schema.edn"))
+
   service
 
+  runnable-service
+
+  (def server (http/start runnable-service))
+
+  server
+
+  (http/stop server)
+
   (-main) 
-  (def server (start-server false))
 
-  (.stop server) 
-
-
-  (q1/handler "bla") 
   (aero-config :dev) 
 
-  (testmuu)
+  (def service (lp/default-service
+                (superdesk-schema "superdesk-graphql-schema.edn")
+                nil ))
 
   )
 
+
+;; Local Variables:
+;; cider-clojure-cli-aliases: "dev:test"
+;; End:

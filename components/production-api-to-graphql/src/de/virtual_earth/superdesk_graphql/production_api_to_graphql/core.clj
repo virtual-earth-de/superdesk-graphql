@@ -9,7 +9,7 @@
 
 (defn ^:private resolve-hello
   [context args value]
-  "Hello, Clojurians!")
+  "eello, Clojurians!")
 
 (defn superdesk-schema
   "create GraphQL schema for superdesk data"
