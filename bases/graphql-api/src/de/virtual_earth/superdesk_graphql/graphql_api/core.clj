@@ -17,13 +17,22 @@
   (:require [clojure.java.io :as io]
             [clojure.edn :as edn]
             [aero.core :as aero :refer (read-config)]
+            [integrant.core :as ig]
             [io.pedestal.http :as http]
             [com.walmartlabs.lacinia.pedestal2 :as lp]
             [com.walmartlabs.lacinia.util :as util]
             [com.walmartlabs.lacinia.schema :as schema]
-            [de.virtual-earth.superdesk-graphql.production-api-to-graphql.interface :as sdapi])
+            [de.virtual-earth.superdesk-graphql.production-api-to-graphql.interface :as sd2ql])
   (:gen-class))
 
+;; interface integrant with aero: just add integrants readers 
+(defmethod aero/reader 'ig/ref
+  [opts tag value]
+  (ig/ref value))
+
+(defmethod aero/reader 'ig/refset
+  [opts tag value]
+  (ig/refset value))
 
 (defn aero-config [profile]
   ;; this should probably be configurable ;)
@@ -34,8 +43,9 @@
 
 (def config (aero-config :dev))
 
+
 (def service (lp/default-service
-              (sdapi/superdesk-schema "superdesk-graphql-schema.edn")
+              (sd2ql/superdesk-schema (:superdesk-production-api config))
               {:port (get-in config [:graphql-api :port])
                :host (get-in config [:graphql-api :host])}))
 
