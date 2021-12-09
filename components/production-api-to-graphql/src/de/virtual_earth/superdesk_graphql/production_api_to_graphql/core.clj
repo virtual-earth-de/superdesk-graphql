@@ -14,32 +14,35 @@
 
 (ns de.virtual-earth.superdesk-graphql.production-api-to-graphql.core
   (:require [clojure.java.io :as io]
-            [clojure.edn :as edn]
-            [io.pedestal.http :as http]
-            [com.walmartlabs.lacinia.pedestal2 :as lp]
             [com.walmartlabs.lacinia.util :as util]
-            [com.walmartlabs.lacinia.schema :as schema])
-  )
+            [com.walmartlabs.lacinia.schema :as schema]
+            [de.virtual-earth.superdesk-graphql.production-api.interface :as sd]))
 
-(defn ^:private resolve-hello
-  [context args value]
-  nil)
 
-(def resolver-map
-  {:query/page-by-id resolve-hello})
+(defn ^:private item-by-id
+  [endpoint]
+  (fn [context args value]
+    (sd/item-by-guid endpoint (:guid args))
+    nil))
+
+(defn resolver-map
+  "Establish connection to superdesk, set up resolver map"
+  [config]
+  {:query/item-by-id (item-by-id endpoint)})
 
 (defn superdesk-schema
   "create GraphQL schema for superdesk data"
-  [schema-file-name]
-  (-> (io/resource schema-file-name)
+  [config]
+  (-> (io/resource (:schema-file-name config))
       slurp
       edn/read-string
-      (util/attach-resolvers resolver-map)
+      (util/attach-resolvers (resolver-map (:endpoint config)))
       schema/compile)) 
 
 (comment
 
-  (def schema (superdesk-schema "superdesk-graphql-schema.edn"))
+  (def schema (superdesk-schema {:schema-file-name "superdesk-graphql-schema.edn"}))
 
   resolver-map
+
   )
