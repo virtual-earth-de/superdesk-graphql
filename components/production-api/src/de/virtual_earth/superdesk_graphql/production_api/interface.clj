@@ -12,4 +12,4 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-(ns de.virtual-earth.superdesk-graphql.production-api-auth.interface)
+(ns de.virtual-earth.superdesk-graphql.production-api.interface)

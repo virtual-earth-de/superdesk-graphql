@@ -12,8 +12,9 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-(ns de.virtual-earth.superdesk-graphql.production-api-to-graphql.auth
-  (:require [hato.client :as http]
+(ns de.virtual-earth.superdesk-graphql.production-api.core
+  (:require [clojure.data.json :as json]
+            [hato.client :as http]
             [tick.core :as time])
   (:import (java.util Base64)
            (java.time Instant)))
