@@ -1,0 +1,15 @@
+;; edit this to fit your installation and
+;; move it to /usr/local/etc/superdesk-to-graphqld.edn
+;; this is read with https://github.com/juxt/aero/
+
+;; config for our graphql-server
+{:graphql-api {:port #long #or [#env STG_PORT 3033]
+               :host #or [#env STG_HOST "localhost"]
+               :handler #ig/ref :handler/greet
+               :ide #boolean #or [#env STG_IDE true]}
+ :superdesk-production-api {:schema-file-name "superdesk-graphql-schema.edn"
+                            :endpoint
+                            {:production_url #or [#env SUPERDESK_ENDPOINT "http://localhost/prodapi/v1"]
+                             :token_url #or [#env SUPERDESK_TOKEN_URL "http://localhost/api/auth_server/token"]
+                             :client_id #or [#env SUPERDESK_CLIENT"1234"]
+                             :password #or [#env SUPERDESK_PASSWORD "5678"]}}}

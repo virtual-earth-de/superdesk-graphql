@@ -39,15 +39,16 @@
   (read-config  "/usr/local/etc/superdesk-to-graphqld.edn" {:profile profile}))
 
 ;; hmmm, dies sollte unten im main stehen, aber jetzt für die repl ist es besser hier draußen...
-;; da hätte ich gerne noch eine bessere Lösung...
+;; de hätte ich gerne noch eine bessere Lösung...
 
 (def config (aero-config :dev))
 
 
 (def service (lp/default-service
               (sd2ql/superdesk-schema (:superdesk-production-api config))
-              {:port (get-in config [:graphql-api :port])
-               :host (get-in config [:graphql-api :host])}))
+              {:port     (get-in config [:graphql-api :port])
+               :host     (get-in config [:graphql-api :host])
+               :graphiql (get-in config [:graphql-api :ide])}))
 
 (def runnable-service (http/create-server service))
 
