@@ -15,7 +15,23 @@
 {:objects
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; objects for included dict-type data
- {:flags
+ {:author_role
+  {:description "Author description in items."
+   :fields {:_id {:type (list String)}
+            :parent {:type ID
+                     :description "ID for Author of this item."}
+            :author {:type Author
+                     :description "The Author for this role and item."
+                     :resolve :author_role/author}
+            :role {:type String
+                   :description "Unique name of role for this author."}
+            :name {:type String
+                   :description "Display name of role for this author."}
+            :sub_label {:type String
+                        :description "Display name of author of this item."}
+            :scheme {:type String
+                     :description "???"}}} 
+  :flags
   {:description "Various flags"
    :fields {:marked_for_not_publication {:type Boolean}
             :marked_for_legal {:type Boolean}
@@ -26,37 +42,42 @@
   {:description "Point of Interest on a picture.
 param x:	horizontal offset
 param y:	vertical offset"
-   :fields {:x {:type Int}
-            :y {:type Int}}}
+   :fields {:x {:type Int
+                :description "Horizontal offset."}
+            :y {:type Int
+                :description "Vertical offset."}}}
 
   :genre
   {:description "Value from genre controlled vocabulary."
    :fields {:qcode {:type ID
                     :description "Genre identifier"}
             :name {:type String
-                   :description "Genra display name."}}}
+                   :description "Genre display name."}}}
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; main objects
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; author object, actually inside Superdesk this is the user
-  :author
+  :Author
   {:description "Superdesk author."
    :fields {:_id {:type ID}
             :first_name {:type String}
             :last_name {:type String}
-            :display_name {:type String}
+            :display_name {:type String
+                           :description "Display name of Author."}
             :byline {:type String}
-            :sign_off {:type String}
+            :sign_off {:type String
+                       :description "Short sign off string for author."}
             :email {:type String}
             :job_title {:type String}
-            :is_author {:type Boolean}
+            :is_author {:type Boolean
+                        :description "Is this user actually an author?"}
             :desk {:type String}
             }}
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; item, the main "anything" content item. Pages, Pictures, what-have-you
-  :item
+  :Item
   {:description "Superdesk Item."
    :enums {:itemtype
            {:values [:text :composite :picture :audio :video]
@@ -137,6 +158,8 @@ param y:	vertical offset"}
             :sms_message {:type String
                           :description "Short summary of an item, can be used for sms/twitter subscribers."}
             ;; item metadata
+            :authors {:type (list author_role)
+                      :description "List of authors and their roles for this item."}
             :type {:type String
                    :description "Item type. One of text|composite|picture|audio|video."}
             :language {:type String
@@ -224,12 +247,12 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
             }}}
  :queries
  {:item_by_guid
-  {:type :item
+  {:type :Item
    :description "Access Superdesk item by GUID"
    :args {:guid {:type ID}}
    :resolve :query/item-by-guid}
   :user_by_id
-  {:type :author
+  {:type :Author
    :description "Access Superdesk author by ID"
    :args {:_id {:type ID}}
    :resolve :query/user-by-id}}}
