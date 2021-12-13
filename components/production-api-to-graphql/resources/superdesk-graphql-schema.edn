@@ -15,7 +15,52 @@
 {:objects
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; objects for included dict-type data
- {:author_role
+ {:medialink
+  {:description "Media link with size and type."
+   :fields {:href {:type String
+                   :description "Link to media file."}
+            :mimetype {:type String
+                       :description "Mimetype of media file."}
+            :width {:type Int
+                    :description "Media width in pixel."}
+            :height {:type Int
+                     :description "Media height in pixel."}}
+   }
+  :renditions
+  {:description "Renditions of a media type."
+   :fields {
+            :original {:type medialink
+                       :description "Original size media."}
+            :thumbnail {:type medialink
+                        :description "Thumbnail of media."}
+            :baseImage {:type medialink
+                        :description "Base media. (???)"}
+            :viewImage {:type medialink
+                        :description "View size media. (???)"}
+            }
+   }
+  :ref
+  {:description "Reference to an item, used in items"
+   :fields {:_id {:type ID
+                  :description "Referred item ID"}
+            :guid {:type ID
+                   :description "Referred item guid"}
+            :item {:type Item
+                   :description "Referred item"
+                   :resolve :ref/item-for-ref}
+            :key {:type ID
+                  :description "ID used to identify item in body_html."}
+            :source {:type String
+                     :description "Source for this item, Superdesk or some ingest source."}
+            :type {:type String
+                   :description "Type of this reference item, e.g. picture."}}}
+  :association_map
+  {:description "Map of Association id to association item."
+   :fields {:id {:type ID
+                 :description "Association ID, unique within this item."}
+            :item {:type Item
+                   :description "Associated Item."}}}
+  :author_role
   {:description "Author description in items."
    :fields {:_id {:type (list String)}
             :parent {:type ID
@@ -124,19 +169,21 @@ param y:	vertical offset"
                   :description "Point of Interest on a picture.
 param x:	horizontal offset
 param y:	vertical offset"}
-            ;; :renditions {:type (list rendition)
-            ;;              :description "Renditions of a media type item:
+            :refs {:type (list ref)
+                   :description "List of referenced/embedded items"}
+            :renditions {:type renditions
+                         :description "Renditions of a media type item:
 
-            ;;     'renditions': {
-            ;;         'original': {
-            ;;             'href': '...',
-            ;;             'width': 1280,
-            ;;             'height': 800,
-            ;;         },
-            ;;         ...
-            ;;     }
+                'renditions': {
+                    'original': {
+                        'href': '...',
+                        'width': 1280,
+                        'height': 800,
+                    },
+                    ...
+                }
 
-            ;; "}
+            "}
             :filemeta_json {:type String
                             :description "JSON encoded filemeta. Avoids storage issues."}
             ;;             :associations {:type FIXME-dict

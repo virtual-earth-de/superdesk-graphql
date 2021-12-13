@@ -155,7 +155,7 @@
 
   (item-authors conn (:authors schachnovelle))
   
-  ()
+  (def einbild (item-by-guid conn "dcd55151-7f97-42e9-a066-07f46cc21694"))
 
   (user-by-id conn (:parent (first (:authors schachnovelle))))
 
