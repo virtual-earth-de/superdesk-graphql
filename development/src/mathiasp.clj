@@ -29,18 +29,19 @@
        node))
    m))
 
+(def schema (sd2gql/superdesk-schema (:superdesk-production-api apicore/config )))
+
+schema 
+
 (defn q
   [query-string]
   (-> (lacinia/execute schema query-string nil nil)
       simplify))
 
-(def schema (sd2gql/superdesk-schema (:superdesk-production-api apicore/config )))
-
-schema 
 
 papicore/schachnovelle
 
-(q "{ item_by_guid(guid: \"90bf03f7-75cf-4404-b3b4-fc4b01c7b272\") { unique_name poi {x y} genre {qcode name} headline slugline abstract priority flags {marked_for_sms marked_for_not_publication} }}")
+(q "{ item_by_guid(guid: \"90bf03f7-75cf-4404-b3b4-fc4b01c7b272\") { unique_name authors { role author {_id display_name byline} } poi {x y} genre {qcode name} headline slugline abstract priority flags {marked_for_sms marked_for_not_publication} }}")
 
 (q "{ user_by_id(_id: \"6123a1ce774a67acc29baac4\") { first_name last_name display_name byline email job_title sign_off } }}")
 

@@ -29,11 +29,17 @@
   [conn context args value]
   (sd/user-by-id conn (:_id args)))
 
+(defn ^:private author-role-author
+  [conn context args author-role]
+  (let [author-id (:parent author-role)]
+    (sd/user-by-id conn author-id)))
+
 (defn resolver-map
   "Establish connection to superdesk, set up resolver map"
   [endpoint]
   (let [conn (sd/init endpoint)]
-    {:query/item-by-guid (partial item-by-guid conn)
+    {:author_role/author (partial author-role-author conn)
+     :query/item-by-guid (partial item-by-guid conn)
      :query/user-by-id (partial user-by-id conn)}))
 
 (defn superdesk-schema
