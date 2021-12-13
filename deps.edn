@@ -10,7 +10,8 @@
                                poly/production-api-to-graphql {:local/root "components/production-api-to-graphql"}
                                poly/production-api            {:local/root "components/production-api"}
                                poly/graphql-api               {:local/root "bases/graphql-api"}
-                               }}
+                               }
+                  :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
             :test {:extra-paths ["components/production-api/test"
                                  "components/production-api-to-graphql/test"
