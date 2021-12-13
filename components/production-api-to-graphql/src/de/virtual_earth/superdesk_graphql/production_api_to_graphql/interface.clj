@@ -13,11 +13,9 @@
 ;; limitations under the License.
 
 (ns de.virtual-earth.superdesk-graphql.production-api-to-graphql.interface
-  (:require [de.virtual-earth.superdesk-graphql.production-api-to-graphql.auth :as auth]
-            [de.virtual-earth.superdesk-graphql.production-api-to-graphql.core :as core]))
-
+  (:require [de.virtual-earth.superdesk-graphql.production-api-to-graphql.core :as core]))
 
 (defn superdesk-schema
   "create GraphQL schema for superdesk data"
-  [schema-file-name]
-  (core/superdesk-schema schema-file-name)) 
+  [config]
+  (core/superdesk-schema config)) 

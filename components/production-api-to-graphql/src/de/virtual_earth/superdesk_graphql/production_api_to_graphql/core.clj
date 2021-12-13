@@ -13,22 +13,28 @@
 ;; limitations under the License.
 
 (ns de.virtual-earth.superdesk-graphql.production-api-to-graphql.core
-  (:require [clojure.java.io :as io]
-            [com.walmartlabs.lacinia.util :as util]
-            [com.walmartlabs.lacinia.schema :as schema]
-            [de.virtual-earth.superdesk-graphql.production-api.interface :as sd]))
+  (:require
+   [clojure.edn :as edn]
+   [clojure.java.io :as io]
+   [clojure.pprint :refer [pprint]]
+   [com.walmartlabs.lacinia.schema :as schema]
+   [com.walmartlabs.lacinia.util :as util]
+   [de.virtual-earth.superdesk-graphql.production-api.core :as sd]))
 
+(defn ^:private item-by-guid
+  [conn context args value]
+  (sd/item-by-guid conn (:guid args)))
 
-(defn ^:private item-by-id
-  [endpoint]
-  (fn [context args value]
-    (sd/item-by-guid endpoint (:guid args))
-    nil))
+(defn ^:private user-by-id
+  [conn context args value]
+  (sd/user-by-id conn (:_id args)))
 
 (defn resolver-map
   "Establish connection to superdesk, set up resolver map"
-  [config]
-  {:query/item-by-id (item-by-id endpoint)})
+  [endpoint]
+  (let [conn (sd/init endpoint)]
+    {:query/item-by-guid (partial item-by-guid conn)
+     :query/user-by-id (partial user-by-id conn)}))
 
 (defn superdesk-schema
   "create GraphQL schema for superdesk data"
@@ -39,10 +45,3 @@
       (util/attach-resolvers (resolver-map (:endpoint config)))
       schema/compile)) 
 
-(comment
-
-  (def schema (superdesk-schema {:schema-file-name "superdesk-graphql-schema.edn"}))
-
-  resolver-map
-
-  )
