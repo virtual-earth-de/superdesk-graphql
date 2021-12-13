@@ -111,13 +111,6 @@
   "Send query for items, args are conn and query as edn which will be turned into json"
   (papi-get! conn (str "/items?source=" (json/write-str query))))
 
-(defn item-authors [conn authors] 
-  "Return list of author objects selected by authors list from item"
-  ;; I really do not know why the id here is called parent, ask superdesk ;)
-  (map (fn [{:keys [parent]}] 
-         (user-by-id conn parent))
-       authors))
-
 (comment
 
 
