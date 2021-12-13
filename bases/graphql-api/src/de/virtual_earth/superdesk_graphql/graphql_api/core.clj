@@ -22,7 +22,7 @@
             [com.walmartlabs.lacinia.pedestal2 :as lp]
             [com.walmartlabs.lacinia.util :as util]
             [com.walmartlabs.lacinia.schema :as schema]
-            [de.virtual-earth.superdesk-graphql.production-api-to-graphql.interface :as sd2ql])
+            [de.virtual-earth.superdesk-graphql.production-api-to-graphql.interface :as sd2gql])
   (:gen-class))
 
 ;; interface integrant with aero: just add integrants readers 
@@ -45,7 +45,7 @@
 
 
 (def service (lp/default-service
-              (sd2ql/superdesk-schema (:superdesk-production-api config))
+              (sd2gql/superdesk-schema (:superdesk-production-api config))
               {:port     (get-in config [:graphql-api :port])
                :host     (get-in config [:graphql-api :host])
                :graphiql (get-in config [:graphql-api :ide])}))
@@ -60,11 +60,9 @@
 
   config
 
-  (get-in config [:graphql-api :port])
+  (def schema (sd2gql/superdesk-schema (:superdesk-production-api config)))
 
-  (read-string (slurp (io/resource "superdesk-graphql-schema.edn")))
-
-  (def schema (superdesk-schema "superdesk-graphql-schema.edn"))
+  schema
 
   service
 
