@@ -105,12 +105,18 @@
   (papi-get! conn (str "/users/" id)))
 
 (defn item-by-guid [conn guid]
-  (pprint (str "item-by-guid guid=" guid))
   (papi-get! conn (str "/items/" guid)))
 
 (defn items-by-query [conn query]
   "Send query for items, args are conn and query as edn which will be turned into json"
   (papi-get! conn (str "/items?source=" (json/write-str query))))
+
+(defn item-authors [conn authors] 
+  "Return list of author objects selected by authors list from item"
+  ;; I really do not know why the id here is called parent, ask superdesk ;)
+  (map (fn [{:keys [parent]}] 
+         (user-by-id conn parent))
+       authors))
 
 (comment
 
@@ -152,7 +158,9 @@
   
   schachnovelle
   
-  (first (:authors schachnovelle))
+  (:authors schachnovelle)
+
+  (item-authors conn (:authors schachnovelle))
   
   ()
 
