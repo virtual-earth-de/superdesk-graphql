@@ -1,6 +1,3 @@
-:PROPERTIES:
-:BeschriebenIn: in
-:END:
 ;; Copyright [2021] [virtual earth Gesellschaft für Wissens re/prä sentation mbH]
 
 ;; Licensed under the Apache License, Version 2.0 (the "License");
