@@ -52,7 +52,7 @@
 
 (def runnable-service (http/create-server service))
 
-(defn -main [& argv]
+(defn main [& argv]
   (http/start runnable-service))
 
 
