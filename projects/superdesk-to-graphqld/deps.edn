@@ -1,9 +1,14 @@
 {:deps {org.clojure/clojure {:mvn/version "1.10.1"}
-        org.clojure/tools.deps.alpha {:mvn/version "0.12.985"}
+        org.clojure/tools.deps.alpha   {:mvn/version "0.12.1003"
+                                        :exclusions [org.eclipse.jetty/jetty-client
+                                                     org.eclipse.jetty/jetty-http
+                                                     org.eclipse.jetty/jetty-util]}
         ch.qos.logback/logback-classic {:mvn/version "1.2.3"}
-        poly/production-api {:local/root "components/production-api"}
-        poly/production-api-to-graphql {:local/root "components/production-api-to-graphql"}
-        poly/graphql-api {:local/root "bases/graphql-api"}}
+        poly/production-api-to-graphql {:local/root "../../components/production-api-to-graphql"}
+        poly/graphql-api {:local/root "../../bases/graphql-api"}
+        poly/production-api {:local/root "../../components/production-api"}
+        }
 
  :aliases {:test {:extra-paths []
-                  :extra-deps  {}}}}
+                  :extra-deps  {}}
+           :uberjar {:main de.virtual-earth.superdesk-graphql.graphql-api.api}}}
