@@ -14,16 +14,14 @@
 
 
 (ns de.virtual-earth.superdesk-graphql.graphql-api.core
-  (:require [clojure.java.io :as io]
-            [clojure.edn :as edn]
-            [aero.core :as aero :refer (read-config)]
-            [integrant.core :as ig]
-            [io.pedestal.http :as http]
-            [com.walmartlabs.lacinia.pedestal2 :as lp]
-            [com.walmartlabs.lacinia.util :as util]
-            [com.walmartlabs.lacinia.schema :as schema]
-            [de.virtual-earth.superdesk-graphql.production-api-to-graphql.interface :as sd2gql])
-  (:gen-class))
+  (:require
+   [aero.core :as aero :refer [read-config]]
+   [clojure.pprint :refer [pprint]]
+   [com.walmartlabs.lacinia.pedestal2 :as lp]
+   [de.virtual-earth.superdesk-graphql.production-api-to-graphql.interface
+    :as sd2gql]
+   [integrant.core :as ig]
+   [io.pedestal.http :as http]))
 
 ;; interface integrant with aero: just add integrants readers 
 (defmethod aero/reader 'ig/ref
@@ -43,12 +41,22 @@
 
 (def config (aero-config :dev))
 
-
-(def service (lp/default-service
-              (sd2gql/superdesk-schema (:superdesk-production-api config))
-              {:port     (get-in config [:graphql-api :port])
-               :host     (get-in config [:graphql-api :host])
-               :graphiql (get-in config [:graphql-api :ide])}))
+(let [path-prefix  (get-in config [:graphql-api :path-prefix] "/")
+      api-path     (str path-prefix "api")
+      ide-path     (str path-prefix "ide")
+      ws-path      (str path-prefix "ws")
+      asset-path   (str path-prefix "assets/graphiql")
+      graphql-port (get-in config [:graphql-api :port])
+      graphql-host (get-in config [:graphql-api :host])
+      show-ide     (get-in config [:graphql-api :ide])]
+  (def service (lp/default-service (sd2gql/superdesk-schema (:superdesk-production-api config))
+                                   {:api-path   api-path
+                                    :ide-path   ide-path
+                                    :ws-path    ws-path
+                                    :asset-path asset-path
+                                    :port       graphql-port
+                                    :host       graphql-host
+                                    :graphiql   show-ide})))
 
 (def runnable-service (http/create-server service))
 

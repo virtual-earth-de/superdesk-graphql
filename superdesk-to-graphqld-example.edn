@@ -5,7 +5,8 @@
 ;; config for our graphql-server
 {:graphql-api {:port #long #or [#env STG_PORT 3033]
                :host #or [#env STG_HOST "localhost"]
-               :handler #ig/ref :handler/greet
+               ;; if you want to mount it somewhere else. Needs to end with a slash
+               :path-prefix #or [#env STG_PATH_PREFIX "/"] 
                :ide #boolean #or [#env STG_IDE true]}
  :superdesk-production-api {:schema-file-name "superdesk-graphql-schema.edn"
                             :endpoint
