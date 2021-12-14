@@ -36,7 +36,6 @@
 
 (defn ^:private item-for-ref
   [conn context args ref]
-  (pprint ref)
   (sd/item-by-guid conn (:guid ref)))
 
 (defn resolver-map

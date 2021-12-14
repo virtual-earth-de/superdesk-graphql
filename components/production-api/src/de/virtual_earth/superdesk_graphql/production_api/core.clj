@@ -163,8 +163,6 @@
   
   (def ffox_query  (json/read-str "{\"query\":{\"filtered\":{\"filter\":{\"and\":[{\"not\":{\"term\":{\"state\":\"spiked\"}}},{\"term\":{\"family_id\":\"90bf03f7-75cf-4404-b3b4-fc4b01c7b272\"}},{\"not\":{\"term\":{\"unique_id\":35}}}]}}},\"size\":200,\"from\":0,\"sort\":{\"versioncreated\":\"desc\"}}" :key-fn keyword))
 
-  (pprint ffox_query)
-
   (def testquery
     { :query
      { :filtered
