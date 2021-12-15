@@ -35,8 +35,9 @@
 
 (defn refresh-now? [refresh-at]
   "Return true if arg (epoch time) is older than 'now' or if it's nil"
+  (pprint (str "refresh-at: " refresh-at "now: " (.getEpochSecond (Instant/now))))
   (if refresh-at
-    (> refresh-at (.getEpochSecond (Instant/now)))
+    (< refresh-at (.getEpochSecond (Instant/now)))
     true))
 
 (defn get-token
