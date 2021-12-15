@@ -298,6 +298,11 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
    :description "Access Superdesk item by GUID"
    :args {:guid {:type ID}}
    :resolve :query/item-by-guid}
+  :items_by_query
+  {:type (list :Item)
+   :description "Access Superdesk items by json-query-string"
+   :args {:query {:type String}}
+   :resolve :query/items-by-query}
   :user_by_id
   {:type :Author
    :description "Access Superdesk author by ID"

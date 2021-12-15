@@ -25,6 +25,10 @@
   [conn context args value]
   (sd/item-by-guid conn (:guid args)))
 
+(defn ^:private items-by-query
+  [conn context args value]
+  (sd/items-by-query conn (:query args)))
+
 (defn ^:private user-by-id
   [conn context args value]
   (sd/user-by-id conn (:_id args)))
@@ -45,6 +49,7 @@
     {:author_role/author (partial author-role-author conn)
      :ref/item-for-ref (partial item-for-ref conn)
      :query/item-by-guid (partial item-by-guid conn)
+     :query/items-by-query (partial items-by-query conn)
      :query/user-by-id (partial user-by-id conn)}))
 
 (defn superdesk-schema

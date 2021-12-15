@@ -35,7 +35,6 @@
 
 (defn refresh-now? [refresh-at]
   "Return true if arg (epoch time) is older than 'now' or if it's nil"
-  (pprint (str "refresh-at: " refresh-at "now: " (.getEpochSecond (Instant/now))))
   (if refresh-at
     (< refresh-at (.getEpochSecond (Instant/now)))
     true))
@@ -110,7 +109,7 @@
 
 (defn items-by-query [conn query]
   "Send query for items, args are conn and query as edn which will be turned into json"
-  (papi-get! conn (str "/items?source=" (json/write-str query))))
+  (:_items (papi-get! conn (str "/items?source=" query))))
 
 (comment
 
@@ -193,6 +192,14 @@
 
   (def composite-items (items-by-query conn testquery2))
 
+  (def items-not-spiked-query  {:query {:filtered {:filter {:not {:term {:state :spiked}}}}}} )
+
+  (def items-not-spiked-string-query "{\"query\":{\"filtered\":{\"filter\":{\"not\":{\"term\":{\"state\":\"spiked\"}}}}}}")
+
+  (= (json/write-str items-not-spiked-query) items-not-spiked-string-query)
+
+  (def items-not-spiked (items-by-query conn items-not-spiked-string-query))
+
   composite-items
   
   (:_items (json/read-str (:body composite-items) :key-fn keyword))
@@ -212,5 +219,5 @@
     (http/get (str "https://superdesk.literatur.review/prodapi/v1/items?source=" (json/write-str {:query {:filtered {:filter {:not {:term {:state :spiked}}}}}})) {:oauth-token (:access_token token) }))
 
   (items-query @conn nil)
-
+  
   )
