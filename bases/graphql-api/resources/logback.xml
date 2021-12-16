@@ -4,45 +4,38 @@
   <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
   -->
 
-  <!-- Simple file output -->
-  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
-    <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-    </encoder>
-
-    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <!-- rollover daily -->
-      <fileNamePattern>logs/pedestal-service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-      <!-- or whenever the file size reaches 64 MB -->
-      <maxFileSize>64 MB</maxFileSize>
-    </rollingPolicy>
-
-    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+<!-- I concur with 12Factor, the application should never decide where logs go -->
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.out</target>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>DEBUG</level>
+      <onMatch>ACCEPT</onMatch>
     </filter>
-    <!-- Safely log to the same file from multiple JVMs. Degrades performance! -->
-    <prudent>true</prudent>
-  </appender>
-
-
-  <!-- Console output -->
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
-    <encoder>
-      <pattern>%-5level %logger{36} - %msg%n</pattern>
-    </encoder>
-    <!-- Only log level WARN and above -->
-    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>INFO</level>
+      <onMatch>ACCEPT</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>TRACE</level>
+      <onMatch>ACCEPT</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>WARN</level>
+      <onMatch>ACCEPT</onMatch>
     </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>ACCEPT</onMatch>
+    </filter>
+    <encoder>
+        <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
   </appender>
 
-
-  <!-- Enable FILE and STDOUT appenders for all log messages.
+  <!-- Enable STDOUT appender for all log messages.
        By default, only log at level INFO and above. -->
   <root level="INFO">
-    <appender-ref ref="FILE" />
+    <appender-ref ref="STDOUT" />
   </root>
 
   <!-- For loggers in the these namespaces, log at all levels. -->
