@@ -3,3 +3,20 @@
 Simple middleware to access superdesk api via GraphQL.
 
 Written in clojure using [[https://github.com/walmartlabs/lacinia-pedestal][lacinia-pedestal]], organized with [[https://polylith.gitbook.io/polylith/][Polylith]].
+
+** Building
+
+You need  [[https://clojure.org/][Clojure]] installed, then just clone the repo, switch to it and run
+
+#+begin_src shell
+  # clojure -T:build uberjar :project superdesk-to-graphqld
+#+end_src
+
+This creates ~projects/superdesk-to-graphqld/target/superdesk-to-graphqld.jar~ which is almost all you need.
+
+Now copy ~superdesk-to-graphqld-example.edn~ to ~/usr/local/etc/superdesk-to-graphqld.edn~ and edit it to containt you installations parameters.
+This file is written in [[https://github.com/edn-format/edn][EDN]] and is read using the [[https://github.com/juxt/aero][Aero]] library, which adds some features to e.g. include environment variables.
+
+Now you can start it with ~java -jar superdesk-to-graphqld~, logs will be written to STDOUT.
+
+If you allowed it in the config you can now find GraphiQL /ide on the ~host/port~ you configured in the ~.edn~ file.
