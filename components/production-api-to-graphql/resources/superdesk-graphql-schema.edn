@@ -15,7 +15,38 @@
 {:objects
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; objects for included dict-type data
- {:medialink
+ {:routes
+  {description "Array with routing/navigation information"
+   :fields {:id {:type ID
+                 :description "Route ID, will be used as part of path."}
+            :name {:type String
+                   :description "Route display name."}
+            :anpa_category {:type ID
+                            :description "The qcode of the category which will be displayed here."}
+            :subroutes {:type (list routes)}}}
+  
+  :translations
+  {:description "Language strings."
+   :fields {:de {:type String
+                 :description "German tranlation."}
+            :fr {:type String
+                 :description "French tranlation."}
+            :es {:type String
+                 :description "Spanish tranlation."}
+            :nl {:type String
+                 :description "Dutch tranlation."}}}
+  :anpa_category
+  {:description "Controlled vocabulary 'categories'."
+   :fields {:name {:type String
+                   :description "Default display name for categoriy."} 
+            :qcode {:type ID
+                    :description "Unique code for category."}
+            :subject {:type String}
+            :translations {:type (list translations)
+                           :description "Translations for category display name."}
+            :scheme {:type String
+                     :description "Controlled vocabulary type, should always be 'categories' here."}}}
+  :medialink
   {:description "Media link with size and type."
    :fields {:href {:type String
                    :description "Link to media file."}
@@ -24,8 +55,7 @@
             :width {:type Int
                     :description "Media width in pixel."}
             :height {:type Int
-                     :description "Media height in pixel."}}
-   }
+                     :description "Media height in pixel."}}}
   :renditions
   {:description "Renditions of a media type."
    :fields {
@@ -36,9 +66,7 @@
             :baseImage {:type medialink
                         :description "Base media. (???)"}
             :viewImage {:type medialink
-                        :description "View size media. (???)"}
-            }
-   }
+                        :description "View size media. (???)"}}}
   :ref
   {:description "Reference to an item, used in items"
    :fields {:_id {:type ID
@@ -163,8 +191,8 @@ param y:	vertical offset"
             ;;          :description "Package contents in NewsML like format."}
             :media {:type String
                     :description "Binary file reference for media type items."}
-            :mediatype {:type String
-                        :description "Binary file mime type."}
+            :mimetype {:type String
+                       :description "Binary file mime type."}
             :poi {:type poi
                   :description "Point of Interest on a picture.
 param x:	horizontal offset
@@ -239,8 +267,12 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
             :copyrightholder {:type String}
             :creditline {:type String}
             ;; CVs - These attributes are populated using values from controlled vocabularies.
-            :anpa_category {:type (list String)
+            :anpa_category {:type (list anpa_category)
                             :description "Values from category cv."}
+            ;; :menuentry {:type (list anpa_category)
+            ;;             :description "Categories describing a menu path this item should be visible in."
+            ;;             :resolve :item/menu-for-item}
+            
             :subject {:type (list String)
                       :description "Values from IPTC subjectcodes plus from custom cvs."}
             :genre {:type (list genre)
@@ -293,7 +325,12 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
             
             }}}
  :queries
- {:item_by_guid
+ {:routes
+  {:type (list routes)
+   :description "List of routesarrays."
+   :args {}
+   :resolve :query/routes}
+  :item_by_guid
   {:type :Item
    :description "Access Superdesk item by GUID"
    :args {:guid {:type ID}}
@@ -303,6 +340,10 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
    :description "Access Superdesk items by json-query-string"
    :args {:query {:type String}}
    :resolve :query/items-by-query}
+  :all_items
+  {:type (list :Item)
+   :description "All items not spiked"
+   :resolve :query/all-items}
   :user_by_id
   {:type :Author
    :description "Access Superdesk author by ID"

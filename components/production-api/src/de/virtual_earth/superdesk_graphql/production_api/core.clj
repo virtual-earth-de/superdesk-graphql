@@ -200,6 +200,10 @@
 
   (def items-not-spiked (items-by-query conn items-not-spiked-string-query))
 
+  (def testq {:query {:term {:type {:value "picture"}}} })
+
+  (def testitems (items-by-query conn (json/write-str testq)))
+
   composite-items
   
   (:_items (json/read-str (:body composite-items) :key-fn keyword))

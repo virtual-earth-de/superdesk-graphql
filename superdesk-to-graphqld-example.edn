@@ -1,4 +1,7 @@
-;; edit this to fit your installation and
+;; This is writen in https://github.com/edn-format/edn using https://github.com/juxt/aero
+;; to add reading from the environment and some data types, e.g. #long or #boolean
+
+;; Edit to fit your installation and
 ;; move it to /usr/local/etc/superdesk-to-graphqld.edn
 ;; this is read with https://github.com/juxt/aero/
 
@@ -13,4 +16,24 @@
                             {:production_url #or [#env SUPERDESK_ENDPOINT "http://localhost/prodapi/v1"]
                              :token_url #or [#env SUPERDESK_TOKEN_URL "http://localhost/api/auth_server/token"]
                              :client_id #or [#env SUPERDESK_CLIENT"1234"]
-                             :password #or [#env SUPERDESK_PASSWORD "5678"]}}}
+                             :password #or [#env SUPERDESK_PASSWORD "5678"]}}
+
+ ;; navigation: I put anpa_categories here to fill the routes with pages.
+ ;; A page with an additional "index" category is the index page of that route.
+ ;; It's imaginable to add a key with a full query, but that seems like overkill (for now?)
+ :routes [{:id :interviews} ; short form；:name = (uppercase (str keyword)), :anpa_category= (str keyword), hier keyword=interviews
+          {:id :rezensionen ; this keyword will be turned into a string for json, one " less typing here...
+           :name "Rezensionen"
+           :anpa_category :rezension
+           :submenu
+           [{:id :sachbuch
+             :anpa_category :sachbuch-rezension}
+            {:id :belletristik
+             :anpa_category :belletristik-rezension}
+            {:id :kinderbuch
+             :anpa_category :kinderbuch-rezension}]}
+          {:id :kolumnen}
+          {:id :casts}
+          {:id :essays}
+          {:id :portraits}
+          {:id :reportagen}]}

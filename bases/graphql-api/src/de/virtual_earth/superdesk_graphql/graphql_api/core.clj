@@ -49,7 +49,8 @@
       graphql-port (get-in config [:graphql-api :port])
       graphql-host (get-in config [:graphql-api :host])
       show-ide     (get-in config [:graphql-api :ide])]
-  (def service (lp/default-service (sd2gql/superdesk-schema (:superdesk-production-api config))
+  (def service (lp/default-service (sd2gql/superdesk-schema (:routes config)
+                                                            (:superdesk-production-api config))
                                    {:api-path   api-path
                                     :ide-path   ide-path
                                     :ws-path    ws-path

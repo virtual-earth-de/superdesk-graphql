@@ -17,5 +17,5 @@
 
 (defn superdesk-schema
   "create GraphQL schema for superdesk data"
-  [config]
-  (core/superdesk-schema config)) 
+  [routes superdesk-production-api]
+  (core/superdesk-schema routes superdesk-production-api)) 
