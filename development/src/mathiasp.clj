@@ -8,9 +8,28 @@
    [de.virtual-earth.superdesk-graphql.production-api.core :as papicore]
    [de.virtual-earth.superdesk-graphql.production-api-to-graphql.interface
     :as sd2gql]
+   [de.virtual-earth.superdesk-graphql.production-api-to-graphql.core
+    :as sd2gqlc]
    [hato.client :as http])
   (:import
    (clojure.lang IPersistentMap)))
+
+;; start server
+(apicore/main nil) 
+
+;;menu code
+
+(sd2gqlc/generate-routes [{:id :test :anpa_category :my-test
+                           :submenu
+                           [{:id :subtest1}
+                            {:id :subtest2}
+                            ]} ] true true true )
+
+(def routes (:routes apicore/config)) 
+
+(sd2gqlc/generate-routes routes true true true )
+
+(name :what)
 
 (defn simplify
   "Converts all ordered maps nested within the map into standard hash maps, and

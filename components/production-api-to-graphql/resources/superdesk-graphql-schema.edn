@@ -321,8 +321,6 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
             :ingest_provider_sequence
             { :type Int
              :description "Counter for ingest items." }
-
-            
             }}}
  :queries
  {:routes

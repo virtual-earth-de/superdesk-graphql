@@ -18,60 +18,69 @@
    [clojure.edn :as edn]
    [clojure.java.io :as io]
    [clojure.pprint :refer [pprint]]
-   [clojure.algo.generic.functor :refer [fmap]]
+   [clojure.string :as str]
    [com.walmartlabs.lacinia.schema :as schema]
    [com.walmartlabs.lacinia.util :as util]
    [de.virtual-earth.superdesk-graphql.production-api.core :as sd]))
 
-(defn ^:private item-by-guid
+(defn item-by-guid
   [conn context args value]
   (sd/item-by-guid conn (:guid args)))
 
-(defn ^:private items-by-query
+(defn items-by-query
   [conn context args value]
   (sd/items-by-query conn (:query args)))
 
-(defn ^:private all-items
+(defn all-items
   [conn context args value]
   (sd/items-by-query
    conn
    (json/write-str
     {:query {:filtered {:filter {:not {:term {:state :spiked}}}}}})))
 
-(defn ^:private user-by-id
+(defn user-by-id
   [conn context args value]
   (sd/user-by-id conn (:_id args)))
 
-(defn ^:private author-role-author
+(defn author-role-author
   [conn context args author-role]
   (let [author-id (:parent author-role)]
     (sd/user-by-id conn author-id)))
 
-(defn ^:private item-for-ref
+(defn item-for-ref
   [conn context args ref]
   (sd/item-by-guid conn (:guid ref)))
 
 ;; depresicated
-;; (defn ^:private menu-for-item
+;; (defn menu-for-item
 ;;   "field resolver: return all categories whose qcode starts with 'menu/'"
 ;;   [conn context args item]
 ;;   (filter (fn [category]
 ;;             (re-matches #"^/menu/.*" (:qcode category)))
 ;;           (:anpa_category item)))
 
-(defn ^:private complete-route
+(defn complete-route
   [route]
-  {:name (:name route)}
-  )
-(defn ^:private generate-routes
+  (let [croute
+        {:id (name (:id route))
+         :name (name (or (:name route) (str/capitalize (name (:id route)))))
+         :anpa_category (name (or (:anpa_category route) (:id route)))
+         }]
+    (if-not (:subroutes route)
+      croute
+      (assoc croute :subroutes
+             (map (fn [route] (complete-route route))
+                  (:subroutes route))))))
+
+
+(defn generate-routes
   "Generate full routes/navigation info from config info."
   [routes _context _args _ref]
   ;; FIXME: generate missing :name :anpa_configuration an so on
   ;; nop for now
-  (pprint routes)
-  (let [completed-routed (map (fn [route] (complete-route route))
+  (let [completed-routes (map (fn [route] (complete-route route))
                               routes)]
-    routes-with-strings))
+    completed-routes))
 
 (defn resolver-map
   "Establish connection to superdesk, set up resolver map"

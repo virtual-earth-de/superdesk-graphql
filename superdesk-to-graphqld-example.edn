@@ -25,7 +25,7 @@
           {:id :rezensionen ; this keyword will be turned into a string for json, one " less typing here...
            :name "Rezensionen"
            :anpa_category :rezension
-           :submenu
+           :subroutes
            [{:id :sachbuch
              :anpa_category :sachbuch-rezension}
             {:id :belletristik
