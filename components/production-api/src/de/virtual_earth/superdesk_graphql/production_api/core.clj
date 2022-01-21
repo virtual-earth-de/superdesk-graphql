@@ -109,7 +109,7 @@
 
 (defn items-by-query [conn query]
   "Send query for items, args are conn and query as edn which will be turned into json"
-  (:_items (papi-get! conn (str "/items?source=" query))))
+  (:_items (papi-get! conn (str "/items?source=" (json/write-str query)))))
 
 (comment
 

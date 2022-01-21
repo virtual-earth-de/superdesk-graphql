@@ -35,8 +35,7 @@
   [conn context args value]
   (sd/items-by-query
    conn
-   (json/write-str
-    {:query {:filtered {:filter {:not {:term {:state :spiked}}}}}})))
+   {:query {:filtered {:filter {:not {:term {:state :spiked}}}}}}))
 
 (defn user-by-id
   [conn context args value]
