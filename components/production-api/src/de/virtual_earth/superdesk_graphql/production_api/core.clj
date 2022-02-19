@@ -16,7 +16,6 @@
   (:require [clojure.data.json :as json]
             [clojure.pprint :refer [pprint]]
             [hato.client :as http]
-            [tick.core :as time]
             [clojure.string :as str])
   (:import (java.util Base64)
            (java.time Instant)))
