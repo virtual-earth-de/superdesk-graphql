@@ -15,7 +15,23 @@
    (clojure.lang IPersistentMap)))
 
 ;; start server
-(apicore/main nil) 
+(apicore/main nil)
+
+;; query superdesk api
+(def conn (papicore/init (get-in apicore/config [:superdesk-production-api :endpoint] )))
+
+(papicore/items-by-query
+ conn
+ {:query {:filtered {:filter {:term {:type :composite}}}}})
+
+(papicore/items-by-query
+ conn
+ {:query {:bool {:must [{:term {:anpa_category.qcode :home}}
+                        {:term {:anpa_category.qcode :index}}
+                        {:term {:type :composite}}
+                        {:terms {:state [:published :corrected]}}]}}})
+
+(sd2gqlc/index-by-category conn nil {:category "sachbuch-rezension"} nil)
 
 ;;menu code
 
@@ -47,6 +63,7 @@
        :else
        node))
    m))
+apicore/config
 
 (def schema (sd2gql/superdesk-schema (:superdesk-production-api apicore/config )))
 
