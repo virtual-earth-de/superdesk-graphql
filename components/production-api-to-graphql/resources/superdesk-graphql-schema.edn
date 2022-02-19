@@ -12,7 +12,11 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-{:objects
+{
+ :enums {:itemtype
+         {:values [:text :composite :picture :audio :video]
+          :description "Item type. One of text|composite|picture|audio|video."}}
+ :objects
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; objects for included dict-type data
  {:routes
@@ -73,6 +77,8 @@
                   :description "Referred item ID"}
             :guid {:type ID
                    :description "Referred item guid"}
+            :label {:type String
+                    :description "If part of a package, a context/layout label, i.e. portrait or landscape"}
             :item {:type Item
                    :description "Referred item"
                    :resolve :ref/item-for-ref}
@@ -82,6 +88,20 @@
                      :description "Source for this item, Superdesk or some ingest source."}
             :type {:type String
                    :description "Type of this reference item, e.g. picture."}}}
+  :groupitem
+  {:description "Metadata for a subgroup in a package. Mostly main, story, aside"
+   :fields {:id {:type String
+                 :description "Package subgroup. Mostly main, stroy, aside"}
+            :role {:type String
+                   :description "Another way of showing package subgroup. (?)"}
+            :refs {:type (list ref)
+                   :description "List of Items in this package"}
+            }
+   }
+  :association_item
+  {:description "Item associated with this item"
+   :fields {:featuremedia {:type Item
+                           :description "Feature Image for this item. Use in Teasers."}}}
   :association_map
   {:description "Map of Association id to association item."
    :fields {:id {:type ID
@@ -187,8 +207,8 @@ param y:	vertical offset"
                           :description "Content footer, used for additional information."}
             ;; :dateline {:type FIXME-String
             ;;            :description "Info about when/where story was written."
-            ;; :groups {:type FIXME-dict
-            ;;          :description "Package contents in NewsML like format."}
+            :groups {:type (list groupitem)
+                     :description "Package contents in NewsML like format."}
             :media {:type String
                     :description "Binary file reference for media type items."}
             :mimetype {:type String
@@ -214,18 +234,8 @@ param y:	vertical offset"}
             "}
             :filemeta_json {:type String
                             :description "JSON encoded filemeta. Avoids storage issues."}
-            ;;             :associations {:type FIXME-dict
-            ;;                            :description "
-
-            ;;     Embedded items within body text or predefined relations:
-
-            ;;     'associations': {
-            ;;         'featured_image': {
-            ;;             'type': 'picture',
-            ;;             'guid': 'urn:localhost:123',
-            ;;             ...
-            ;;         }
-            ;;     }thx!
+            :associations {:type association_item
+                           :description "Associated media"}
 
             ;; "}
             :alt_text {:type String
@@ -235,7 +245,7 @@ param y:	vertical offset"}
             ;; item metadata
             :authors {:type (list author_role)
                       :description "List of authors and their roles for this item."}
-            :type {:type String
+            :type {:type itemtype
                    :description "Item type. One of text|composite|picture|audio|video."}
             :language {:type String
                        :description "Item language code."}
@@ -269,10 +279,6 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
             ;; CVs - These attributes are populated using values from controlled vocabularies.
             :anpa_category {:type (list anpa_category)
                             :description "Values from category cv."}
-            ;; :menuentry {:type (list anpa_category)
-            ;;             :description "Categories describing a menu path this item should be visible in."
-            ;;             :resolve :item/menu-for-item}
-            
             :subject {:type (list String)
                       :description "Values from IPTC subjectcodes plus from custom cvs."}
             :genre {:type (list genre)
@@ -290,6 +296,7 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
                            :description "When the item was created."}
             :versioncreated {:type String
                              :description "When current version was created."}
+            
             :original_creator {:type ID
                                :description "User who created/fetched item."}
             :version_creator {:type ID
@@ -342,6 +349,21 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
   {:type (list :Item)
    :description "All items not spiked"
    :resolve :query/all-items}
+  :items_by_category
+  {:type (list :Item)
+   :description "All items matching category"
+   :args {:category {:type String}}
+   :resolve :query/items-by-category}
+  :items_by_search
+  {:type (list :Item)
+   :description "All items matching search text"
+   :args {:search {:type String}}
+   :resolve :query/items-by-search}
+  :index_by_category
+  {:type (list :Item)
+   :description "All packages with matching category"
+   :args {:category {:type String}}
+   :resolve :query/index-by-category}
   :user_by_id
   {:type :Author
    :description "Access Superdesk author by ID"

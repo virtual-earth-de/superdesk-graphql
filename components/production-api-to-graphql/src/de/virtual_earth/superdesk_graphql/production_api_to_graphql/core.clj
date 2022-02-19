@@ -35,7 +35,32 @@
   [conn context args value]
   (sd/items-by-query
    conn
-   {:query {:filtered {:filter {:not {:term {:state :spiked}}}}}}))
+   {:query {:not {:term {:state :spiked}}}}))
+
+(defn items-by-category
+  [conn context args value]
+  (sd/items-by-query
+   conn
+   {:query {:bool {:must [{:term {:anpa_category.qcode (:category args)}}
+                          {:term {:type :text}}
+                          {:terms {:state [:published :corrected]}}]}}}))
+
+(defn items-by-search
+  [conn context args value]
+  (pprint (:search args))
+  (sd/items-by-query
+   conn
+   {:query {:bool {:must [{:terms {:state [:published :corrected]}}
+                          {:query_string {:query (:search args) }}]}}}))
+
+(defn index-by-category
+  [conn context args value]
+  (sd/items-by-query
+   conn
+   {:query {:bool {:must [{:term {:anpa_category.qcode (:category args)}}
+                          {:term {:anpa_category.qcode :index}}
+                          {:term {:type :composite}}
+                          {:terms {:state [:published :corrected]}}]}}}))
 
 (defn user-by-id
   [conn context args value]
@@ -49,14 +74,6 @@
 (defn item-for-ref
   [conn context args ref]
   (sd/item-by-guid conn (:guid ref)))
-
-;; depresicated
-;; (defn menu-for-item
-;;   "field resolver: return all categories whose qcode starts with 'menu/'"
-;;   [conn context args item]
-;;   (filter (fn [category]
-;;             (re-matches #"^/menu/.*" (:qcode category)))
-;;           (:anpa_category item)))
 
 (defn complete-route
   [route]
@@ -75,8 +92,6 @@
 (defn generate-routes
   "Generate full routes/navigation info from config info."
   [routes _context _args _ref]
-  ;; FIXME: generate missing :name :anpa_configuration an so on
-  ;; nop for now
   (let [completed-routes (map (fn [route] (complete-route route))
                               routes)]
     completed-routes))
@@ -92,6 +107,9 @@
      :query/item-by-guid (partial item-by-guid conn)
      :query/items-by-query (partial items-by-query conn)
      :query/all-items (partial all-items conn)
+     :query/items-by-category (partial items-by-category conn)
+     :query/items-by-search (partial items-by-search conn)
+     :query/index-by-category (partial index-by-category conn)
      :query/user-by-id (partial user-by-id conn)}))
 
 (defn superdesk-schema
