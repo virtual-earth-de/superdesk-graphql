@@ -159,12 +159,19 @@ param y:	vertical offset"
             :display_name {:type String
                            :description "Display name of Author."}
             :byline {:type String}
+            :biography {:type String}
+            :facebook {:type String}
+            :instagram {:type String}
+            :twitter {:type String}
+            :picture_url {:type String}
             :sign_off {:type String
                        :description "Short sign off string for author."}
             :email {:type String}
             :job_title {:type String}
             :is_author {:type Boolean
                         :description "Is this user actually an author?"}
+            :is_active {:type Boolean
+                        :description "is this user (still) active?"}
             :desk {:type String}
             }}
 
