@@ -27,6 +27,11 @@
   [conn guid]
   (core/item-by-guid conn guid))
 
+(defn item-by-path
+  "Get item by path"
+  [conn path]
+  (core/item-by-path conn path))
+
 (defn items-by-query
   "Send query for items, args are conn and query as edn which will be turned into json"
   [conn query]

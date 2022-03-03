@@ -193,6 +193,8 @@ param y:	vertical offset"
                         :description "Id for all items derived from single item via fetch or copy actions. For ingested items equals to ingest_id."}
             :related_to {:type String
                          :description "Original item id when doing associate metadata action."}
+            :path {:type String
+                   :description "absolute path to this item for URLs"}
             ;; content metadata
             :headline {:type String}
             :slugline {:type String}
@@ -347,6 +349,11 @@ ContentStates = <class 'superdesk.metadata.item.ContentStates'>
    :description "Access Superdesk item by GUID"
    :args {:guid {:type ID}}
    :resolve :query/item-by-guid}
+  :item_by_path
+  {:type :Item
+   :description "Access Superdesk item by GUID"
+   :args {:path {:type String}}
+   :resolve :query/item-by-path}
   :items_by_query
   {:type (list :Item)
    :description "Access Superdesk items by json-query-string"

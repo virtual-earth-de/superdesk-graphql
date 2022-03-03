@@ -15,10 +15,45 @@
 (ns de.virtual-earth.superdesk-graphql.production-api.core
   (:require [clojure.data.json :as json]
             [clojure.pprint :refer [pprint]]
-            [hato.client :as http]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [clojure.walk :as walk]
+            [hato.client :as http])
   (:import (java.util Base64)
-           (java.time Instant)))
+           (java.time Instant)
+           (java.net URLEncoder URLDecoder)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; functions to add a path to an item
+;; and to get the unique_name back from the path
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn document-path
+  "add document path for URL to item"
+  [{:keys [unique_name slugline] :or {unique_name "#XXXXXXXXX" slugline "missing slugline!"} :as item}]
+  (let [id (subs unique_name 1)
+        slug (URLEncoder/encode slugline "UTF-8")]
+    (str id "-" slug)))
+
+(defn item-with-path
+  "add document path to item"
+  [item]
+  (if (= (type item) clojure.lang.PersistentHashMap)
+    (do
+      (assoc item :path (document-path item)))
+    item))
+
+(defn struct-with-item-paths
+  "add path to every item in data structure"
+  [ds]
+  (walk/postwalk item-with-path ds))
+
+(defn id-from-path
+  "creates the id/unique_name (numbers until dash w. prepended '#') from document path"
+  [path]
+  (let [id (first (str/split path #"-" 2))]
+    (str "#" id)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn epochTimeInc
   "Add arg seconds to epoch time and return result"
@@ -78,7 +113,7 @@
   (let [{:keys [endpoint token]} @conn] 
     ;;this connection can fail for various reasons even if our token is fresh. FIXME: add error handling
     (json/read-str
-     (:body (http/get (str (:production-url endpoint) args) {:oauth-token (:access_token token)}))
+     (:body (http/get (str (:production-url endpoint) args)  {:oauth-token (:access_token token)}))
      :key-fn keyword)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -104,11 +139,18 @@
   (papi-get! conn (str "/users/" id)))
 
 (defn item-by-guid [conn guid]
-  (papi-get! conn (str "/items/" guid)))
+  (struct-with-item-paths (papi-get! conn (str "/items/" guid))))
+
+(defn item-by-path  [conn path]
+  (let [unique_name (id-from-path path) 
+        ;; unque_name starts with a '#', so we have to urlencode it for use as URL query string
+        query {:query {:term {:unique_name (URLEncoder/encode unique_name "UTF-8")}}}]
+    (struct-with-item-paths
+     (first (:_items (papi-get! conn (str "/items?source=" (json/write-str query))))))))
 
 (defn items-by-query [conn query]
   "Send query for items, args are conn and query as edn which will be turned into json"
-  (:_items (papi-get! conn (str "/items?source=" (json/write-str query)))))
+  (:_items (struct-with-item-paths (papi-get! conn (str "/items?source=" (json/write-str query))))))
 
 (comment
 
@@ -219,7 +261,7 @@
                 (http/post "https://superdesk.literatur.review/prodapi/v1/items?source=")) )
 
   (defn items-query [{:keys [endpoint token]} query]
-    (http/get (str "https://superdesk.literatur.review/prodapi/v1/items?source=" (json/write-str {:query {:filtered {:filter {:not {:term {:state :spiked}}}}}})) {:oauth-token (:access_token token) }))
+    (http/get (str "https://superdesk.literatur.review/prodapi/v1/items?source=" (URLEncoder/encode (json/write-str {:query {:filtered {:filter {:not {:term {:state :spiked}}}}}}) "UTF-8"))  {:oauth-token (:access_token token) }))
 
   (items-query @conn nil)
   

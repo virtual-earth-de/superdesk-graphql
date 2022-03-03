@@ -27,6 +27,10 @@
   [conn context args value]
   (sd/item-by-guid conn (:guid args)))
 
+(defn item-by-path
+  [conn context args value]
+  (sd/item-by-path conn (:path args)))
+
 (defn items-by-query
   [conn context args value]
   (sd/items-by-query conn (:query args)))
@@ -105,6 +109,7 @@
      ;; :item/menu-for-item (partial menu-for-item conn) ; depreciated
      :query/routes (partial generate-routes routes)
      :query/item-by-guid (partial item-by-guid conn)
+     :query/item-by-path (partial item-by-path conn)
      :query/items-by-query (partial items-by-query conn)
      :query/all-items (partial all-items conn)
      :query/items-by-category (partial items-by-category conn)
