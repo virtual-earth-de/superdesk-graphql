@@ -51,7 +51,6 @@
 
 (defn items-by-search
   [conn context args value]
-  (pprint (:search args))
   (sd/items-by-query
    conn
    {:query {:bool {:must [{:terms {:state [:published :corrected]}}
